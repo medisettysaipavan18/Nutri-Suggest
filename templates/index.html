@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>FoodLens - Smart Food Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="landing">
+    <header class="nav">
+        <div class="nav-inner">
+            <div class="brand">Food<span>Lens</span></div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#how">How it works</a>
+                <a href="#upload">Try it</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Know your food in seconds</h1>
+            <p>Upload a photo to recognize the dish and get instant nutrition insights powered by deep learning.</p>
+            <a href="#upload" class="button cta">Start now</a>
+        </div>
+        <div class="hero-art">
+            <div class="card-grid">
+                <div class="card pulse">
+                    <h3>200+ classes</h3>
+                    <p>Trained on diverse cuisines to boost accuracy.</p>
+                </div>
+                <div class="card float">
+                    <h3>Smart nutrition</h3>
+                    <p>Estimates calories, protein, and fats per serving.</p>
+                </div>
+                <div class="card shine">
+                    <h3>Health advice</h3>
+                    <p>Ask tailored questions with our AI assistant.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <h2>Why FoodLens?</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <div class="icon">🍽️</div>
+                <h3>Computer vision</h3>
+                <p>State-of-the-art CNN recognizes dishes from your photos.</p>
+            </div>
+            <div class="feature">
+                <div class="icon">⚖️</div>
+                <h3>Portion aware</h3>
+                <p>Estimates portion size from image area for better macros.</p>
+            </div>
+            <div class="feature">
+                <div class="icon">🤖</div>
+                <h3>LLM guidance</h3>
+                <p>Get concise health tips for your dietary needs.</p>
+            </div>
+            <div class="feature">
+                <div class="icon">⚡</div>
+                <h3>Fast & private</h3>
+                <p>Runs on our secure server, only stores what you upload.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="how" class="how">
+        <h2>How it works</h2>
+        <ol>
+            <li>Upload a food photo.</li>
+            <li>We identify the dish and estimate nutrition.</li>
+            <li>Ask health questions and get instant advice.</li>
+        </ol>
+    </section>
+
+    <section id="upload" class="upload-section">
+        <h2>Try it now</h2>
+        <p>Drag and drop an image or click to select.</p>
+        <form id="upload-form" method="post" enctype="multipart/form-data">
+            <input id="file-input" type="file" name="file" accept="image/*" required>
+            <div id="dropzone" class="dropzone">
+                <div class="dz-instructions">Drop image here or click to browse</div>
+                <img id="preview" alt="preview" style="display:none;"/>
+            </div>
+            <button type="submit" class="button">Upload and Predict</button>
+        </form>
+        {% if error %}
+            <p class="error">Error: {{ error }}</p>
+        {% endif %}
+    </section>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div>© {{ 2025 }} FoodLens</div>
+            <div class="links">
+                <a href="#features">Features</a>
+                <a href="#how">How it works</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const href = a.getAttribute('href');
+            if (href.length > 1) {
+                e.preventDefault();
+                document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Drag & Drop logic
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('file-input');
+    const previewImg = document.getElementById('preview');
+
+    const openPicker = () => fileInput.click();
+    ['click'].forEach(evt => dropzone.addEventListener(evt, openPicker));
+
+    ;['dragenter','dragover'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('dragover');
+        });
+    });
+    ;['dragleave','drop'].forEach(evt => {
+        dropzone.addEventListener(evt, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('dragover');
+        });
+    });
+    dropzone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files && dt.files.length > 0) {
+            fileInput.files = dt.files;
+            showPreview(dt.files[0]);
+        }
+    });
+    fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) {
+            showPreview(fileInput.files[0]);
+        }
+    });
+
+    function showPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            previewImg.src = ev.target.result;
+            previewImg.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+    </script>
+</body>
+</html>

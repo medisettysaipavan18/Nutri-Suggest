@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Prediction Result - FoodLens</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+        <div class="result">
+            {% if image_filename %}
+                <img src="{{ url_for('uploaded_file', filename=image_filename) }}" alt="Uploaded Image">
+            {% endif %}
+            <div class="info">
+                <h2>{{ predicted_class }}</h2>
+                {% if confidence %}
+                    <p><strong>Confidence:</strong> {{ confidence }}</p>
+                {% endif %}
+                <h3>Nutritional Information:</h3>
+                {% if nutrition_info.error %}
+                    <p class="error">{{ nutrition_info.error }}</p>
+                {% else %}
+                    <ul>
+                        <li><strong>Calories:</strong> {{ nutrition_info.calories }}</li>
+                        <li><strong>Protein:</strong> {{ nutrition_info.protein }}</li>
+                        <li><strong>Total Fat:</strong> {{ nutrition_info.total_fat }}</li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+        <form method="post" action="/llm_advice">
+            <input type="hidden" name="predicted_class" value="{{ predicted_class }}">
+            <input type="hidden" name="nutrition_calories" value="{{ nutrition_info.calories }}">
+            <input type="hidden" name="nutrition_protein" value="{{ nutrition_info.protein }}">
+            <input type="hidden" name="nutrition_fat" value="{{ nutrition_info.total_fat }}">
+            <input type="hidden" name="image_filename" value="{{ image_filename }}">
+            <label for="user_query"><strong>Ask a health question about this food:</strong></label>
+            <textarea name="user_query" id="user_query" rows="3" style="width:100%;margin:10px 0;" placeholder="E.g. I have diabetes, can I eat this? How much?"></textarea>
+            <div style="display:flex; gap:8px; align-items:center; margin:6px 0 12px;">
+                <!-- <label for="explicit_model" style="font-size:14px;color:#475569">Model (optional):</label> -->
+                <!-- <input type="text" id="explicit_model" name="explicit_model" placeholder="gemini-1.5-flash" style="flex:1; padding:8px 10px; border:1px solid #e2e8f0; border-radius:8px;"> -->
+            </div>
+            <button type="submit">SUBMIT</button>
+        </form>
+        {% if llm_advice %}
+            <div class="llm-advice" style="margin-top:16px; text-align:left;">
+                <h3>LLM Advice</h3>
+                <p>{{ llm_advice }}</p>
+            </div>
+        {% endif %}
+        <div style="margin-top:18px;">
+            <a href="/" class="button">Try another image</a>
+            <a href="/#upload" class="button" style="background:#0ea5e9; margin-left:8px;">Back to upload</a>
+        </div>
+    </div>
+</body>
+</html>
